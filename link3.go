@@ -12,7 +12,7 @@ import (
 type link3 struct {
 	url   string
 	image string
-	title string
+	video string
 	text  string
 }
 
@@ -26,37 +26,35 @@ func scrapLink3() []link3 {
 	// Set a delay between requests to avoid being blocked
 	c.SetRequestTimeout(time.Second * 10)
 
-	c.OnHTML(".o-listease__item", func(e *colly.HTMLElement) {
+	c.OnHTML("article", func(e *colly.HTMLElement) {
 		linkData := link3{}
 
 		linkData.url = e.ChildAttr("a", "href")
 		linkData.image = e.ChildAttr("img", "src")
-		linkData.title = e.ChildAttr("a", "title")
-		linkData.text = e.ChildText(".m-statement__quote")
+		
+		linkData.text = e.ChildText("h4")
 
 		scrapData = append(scrapData, linkData)
 	})
 
-	c.OnHTML(".m-teaser", func(e *colly.HTMLElement) {
-		linkData := link3{}
+	// c.OnHTML(".embed-youtube", func(e *colly.HTMLElement) {
+	// 	linkData := link3{}
 
-		linkData.url = e.ChildAttr("a", "href")
-		linkData.image = e.ChildAttr("img", "src")
-		linkData.title = e.ChildAttr("a", "title")
+	// 	linkData.video = e.ChildAttr("iframe", "src")
 
-		scrapData = append(scrapData, linkData)
-	})
+	// 	scrapData = append(scrapData, linkData)
+	// })
 
 	c.OnError(func(r *colly.Response, err error) {
 		log.Printf("Request URL: %s failed with response: %v\n", r.Request.URL, err)
 	})
 
-	c.Visit("https://www.politifact.com")
+	c.Visit("https://mastodon.social/explore")
 
 	// Wait for the collector to finish
 	c.Wait()
 
-	file, err := os.Create("link1.csv")
+	file, err := os.Create("link3.csv")
 	if err != nil {
 		log.Fatalln("Failed to create output CSV file", err)
 	}
@@ -68,8 +66,8 @@ func scrapLink3() []link3 {
 	headers := []string{
 		"url",
 		"image",
-		"title",
-		"text",
+		"video",
+		"h4",
 	}
 	writer.Write(headers)
 
@@ -78,7 +76,7 @@ func scrapLink3() []link3 {
 		record := []string{
 			dataArray.url,
 			dataArray.image,
-			dataArray.title,
+			dataArray.video,
 			dataArray.text,
 		}
 
