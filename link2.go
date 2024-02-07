@@ -12,7 +12,7 @@ import (
 type link2 struct {
 	url   string
 	image string
-	title string
+	video string
 	text  string
 }
 
@@ -31,21 +31,19 @@ func scrapLink2() []link2 {
 
 		linkData.url = e.ChildAttr("a", "href")
 		linkData.image = e.ChildAttr("img", "src")
-		// linkData.title = e.ChildAttr("a", "title")
+		
 		linkData.text = e.ChildText("h4")
 
 		scrapData = append(scrapData, linkData)
 	})
 
-	// c.OnHTML(".m-teaser", func(e *colly.HTMLElement) {
-	// 	pokemonProduct := link2{}
+	c.OnHTML(".embed-youtube", func(e *colly.HTMLElement) {
+		linkData := link2{}
 
-	// 	pokemonProduct.url = e.ChildAttr("a", "href")
-	// 	pokemonProduct.image = e.ChildAttr("img", "src")
-	// 	pokemonProduct.title = e.ChildAttr("a", "title")
+		linkData.video = e.ChildAttr("iframe", "src")
 
-	// 	scrapData = append(scrapData, pokemonProduct)
-	// })
+		scrapData = append(scrapData, linkData)
+	})
 
 	c.OnError(func(r *colly.Response, err error) {
 		log.Printf("Request URL: %s failed with response: %v\n", r.Request.URL, err)
@@ -68,7 +66,7 @@ func scrapLink2() []link2 {
 	headers := []string{
 		"url",
 		"image",
-		// "title",
+		"video",
 		"h4",
 	}
 	writer.Write(headers)
@@ -78,6 +76,7 @@ func scrapLink2() []link2 {
 		record := []string{
 			dataArray.url,
 			dataArray.image,
+			dataArray.video,
 			dataArray.text,
 		}
 
