@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/csv"
-	"fmt"
 	"log"
 	"os"
 	"time"
@@ -17,8 +16,7 @@ type scrapStruct struct {
 	text  string
 }
 
-func main() {
-
+func scrapeAndWriteCSV() []scrapStruct {
 	var scrapData []scrapStruct
 
 	c := colly.NewCollector(
@@ -94,5 +92,5 @@ func main() {
 		log.Fatalln("Error writing CSV:", err)
 	}
 
-	fmt.Println("Scraping and CSV writing completed successfully.")
+	return scrapData
 }
