@@ -56,7 +56,7 @@ func scrapLink2() []link2 {
 	// Wait for the collector to finish
 	c.Wait()
 
-	file, err := os.Create("link1.csv")
+	file, err := os.Create("link2.csv")
 	if err != nil {
 		log.Fatalln("Failed to create output CSV file", err)
 	}
