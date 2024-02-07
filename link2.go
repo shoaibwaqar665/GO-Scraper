@@ -9,15 +9,15 @@ import (
 	"github.com/gocolly/colly"
 )
 
-type scrapStruct struct {
+type link2 struct {
 	url   string
 	image string
 	title string
 	text  string
 }
 
-func scrapeAndWriteCSV() []scrapStruct {
-	var scrapData []scrapStruct
+func scrapLink2() []link2 {
+	var scrapData []link2
 
 	c := colly.NewCollector(
 		colly.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"),
@@ -27,7 +27,7 @@ func scrapeAndWriteCSV() []scrapStruct {
 	c.SetRequestTimeout(time.Second * 10)
 
 	c.OnHTML(".o-listease__item", func(e *colly.HTMLElement) {
-		linkData := scrapStruct{}
+		linkData := link2{}
 
 		linkData.url = e.ChildAttr("a", "href")
 		linkData.image = e.ChildAttr("img", "src")
@@ -38,7 +38,7 @@ func scrapeAndWriteCSV() []scrapStruct {
 	})
 
 	c.OnHTML(".m-teaser", func(e *colly.HTMLElement) {
-		pokemonProduct := scrapStruct{}
+		pokemonProduct := link2{}
 
 		pokemonProduct.url = e.ChildAttr("a", "href")
 		pokemonProduct.image = e.ChildAttr("img", "src")
