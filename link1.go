@@ -38,13 +38,13 @@ func scrapeAndWriteCSV() []scrapStruct {
 	})
 
 	c.OnHTML(".m-teaser", func(e *colly.HTMLElement) {
-		pokemonProduct := scrapStruct{}
+		linkData := scrapStruct{}
 
-		pokemonProduct.url = e.ChildAttr("a", "href")
-		pokemonProduct.image = e.ChildAttr("img", "src")
-		pokemonProduct.title = e.ChildAttr("a", "title")
+		linkData.url = e.ChildAttr("a", "href")
+		linkData.image = e.ChildAttr("img", "src")
+		linkData.title = e.ChildAttr("a", "title")
 
-		scrapData = append(scrapData, pokemonProduct)
+		scrapData = append(scrapData, linkData)
 	})
 
 	c.OnError(func(r *colly.Response, err error) {
