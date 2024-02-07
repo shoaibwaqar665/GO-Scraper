@@ -26,32 +26,32 @@ func scrapLink2() []link2 {
 	// Set a delay between requests to avoid being blocked
 	c.SetRequestTimeout(time.Second * 10)
 
-	c.OnHTML(".o-listease__item", func(e *colly.HTMLElement) {
+	c.OnHTML(".entry-header", func(e *colly.HTMLElement) {
 		linkData := link2{}
 
 		linkData.url = e.ChildAttr("a", "href")
 		linkData.image = e.ChildAttr("img", "src")
-		linkData.title = e.ChildAttr("a", "title")
-		linkData.text = e.ChildText(".m-statement__quote")
+		// linkData.title = e.ChildAttr("a", "title")
+		linkData.text = e.ChildText("h4")
 
 		scrapData = append(scrapData, linkData)
 	})
 
-	c.OnHTML(".m-teaser", func(e *colly.HTMLElement) {
-		pokemonProduct := link2{}
+	// c.OnHTML(".m-teaser", func(e *colly.HTMLElement) {
+	// 	pokemonProduct := link2{}
 
-		pokemonProduct.url = e.ChildAttr("a", "href")
-		pokemonProduct.image = e.ChildAttr("img", "src")
-		pokemonProduct.title = e.ChildAttr("a", "title")
+	// 	pokemonProduct.url = e.ChildAttr("a", "href")
+	// 	pokemonProduct.image = e.ChildAttr("img", "src")
+	// 	pokemonProduct.title = e.ChildAttr("a", "title")
 
-		scrapData = append(scrapData, pokemonProduct)
-	})
+	// 	scrapData = append(scrapData, pokemonProduct)
+	// })
 
 	c.OnError(func(r *colly.Response, err error) {
 		log.Printf("Request URL: %s failed with response: %v\n", r.Request.URL, err)
 	})
 
-	c.Visit("https://www.politifact.com")
+	c.Visit("https://www.altnews.in")
 
 	// Wait for the collector to finish
 	c.Wait()
@@ -68,8 +68,8 @@ func scrapLink2() []link2 {
 	headers := []string{
 		"url",
 		"image",
-		"title",
-		"text",
+		// "title",
+		"h4",
 	}
 	writer.Write(headers)
 
@@ -78,7 +78,6 @@ func scrapLink2() []link2 {
 		record := []string{
 			dataArray.url,
 			dataArray.image,
-			dataArray.title,
 			dataArray.text,
 		}
 
