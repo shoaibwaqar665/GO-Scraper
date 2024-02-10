@@ -26,24 +26,17 @@ func scrapLink3() []link3 {
 	// Set a delay between requests to avoid being blocked
 	c.SetRequestTimeout(time.Second * 10)
 
-	c.OnHTML("article", func(e *colly.HTMLElement) {
+	c.OnHTML(".status-card__content", func(e *colly.HTMLElement) {
 		linkData := link3{}
 
 		linkData.url = e.ChildAttr("a", "href")
 		linkData.image = e.ChildAttr("img", "src")
 		
-		linkData.text = e.ChildText("h4")
+		linkData.text = e.ChildText("span.status-card__description")
 
 		scrapData = append(scrapData, linkData)
 	})
 
-	// c.OnHTML(".embed-youtube", func(e *colly.HTMLElement) {
-	// 	linkData := link3{}
-
-	// 	linkData.video = e.ChildAttr("iframe", "src")
-
-	// 	scrapData = append(scrapData, linkData)
-	// })
 
 	c.OnError(func(r *colly.Response, err error) {
 		log.Printf("Request URL: %s failed with response: %v\n", r.Request.URL, err)
@@ -67,7 +60,7 @@ func scrapLink3() []link3 {
 		"url",
 		"image",
 		"video",
-		"h4",
+		"text",
 	}
 	writer.Write(headers)
 
