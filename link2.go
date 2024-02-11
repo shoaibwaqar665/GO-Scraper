@@ -18,20 +18,21 @@ type link2 struct {
 
 func scrapLink2() []link2 {
 	var scrapData []link2
-
+	// <-- gpt modification
 	c := colly.NewCollector(
 		colly.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"),
 	)
 
 	// Set a delay between requests to avoid being blocked
 	c.SetRequestTimeout(time.Second * 10)
+	//-->
 
 	c.OnHTML(".entry-header", func(e *colly.HTMLElement) {
 		linkData := link2{}
 
 		linkData.url = e.ChildAttr("a", "href")
 		linkData.image = e.ChildAttr("img", "src")
-		
+
 		linkData.text = e.ChildText("h4")
 
 		scrapData = append(scrapData, linkData)
