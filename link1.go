@@ -18,14 +18,14 @@ type scrapStruct struct {
 
 func scrapeAndWriteCSV() []scrapStruct {
 	var scrapData []scrapStruct
-
+	// <-- gpt modification
 	c := colly.NewCollector(
 		colly.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"),
 	)
 
 	// Set a delay between requests to avoid being blocked
 	c.SetRequestTimeout(time.Second * 10)
-
+	//-->
 	c.OnHTML(".o-listease__item", func(e *colly.HTMLElement) {
 		linkData := scrapStruct{}
 
