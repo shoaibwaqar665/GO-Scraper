@@ -19,24 +19,24 @@ type link3 struct {
 func scrapLink3() []link3 {
 	var scrapData []link3
 
+	// <-- gpt modification
 	c := colly.NewCollector(
 		colly.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"),
 	)
 
 	// Set a delay between requests to avoid being blocked
 	c.SetRequestTimeout(time.Second * 10)
-
+	//-->
 	c.OnHTML(".status-card__content", func(e *colly.HTMLElement) {
 		linkData := link3{}
 
 		linkData.url = e.ChildAttr("a", "href")
 		linkData.image = e.ChildAttr("img", "src")
-		
+
 		linkData.text = e.ChildText("span.status-card__description")
 
 		scrapData = append(scrapData, linkData)
 	})
-
 
 	c.OnError(func(r *colly.Response, err error) {
 		log.Printf("Request URL: %s failed with response: %v\n", r.Request.URL, err)
