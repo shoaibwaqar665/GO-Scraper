@@ -1,8 +1,13 @@
 package main
 
 import (
+	"crypto/md5"
 	"encoding/csv"
+	"encoding/hex"
+	"fmt"
+	// "io"
 	"log"
+	// "net/http"
 	"os"
 	"time"
 
@@ -18,14 +23,12 @@ type scrapStruct struct {
 
 func scrapeAndWriteCSV() []scrapStruct {
 	var scrapData []scrapStruct
-	// <-- gpt modification
 	c := colly.NewCollector(
 		colly.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"),
 	)
 
-	// Set a delay between requests to avoid being blocked
 	c.SetRequestTimeout(time.Second * 10)
-	//-->
+
 	c.OnHTML(".o-listease__item", func(e *colly.HTMLElement) {
 		linkData := scrapStruct{}
 
@@ -52,8 +55,6 @@ func scrapeAndWriteCSV() []scrapStruct {
 	})
 
 	c.Visit("https://www.politifact.com")
-
-	// Wait for the collector to finish
 	c.Wait()
 
 	file, err := os.Create("link1.csv")
@@ -62,7 +63,6 @@ func scrapeAndWriteCSV() []scrapStruct {
 	}
 	defer file.Close()
 
-	// Initializing a file writer
 	writer := csv.NewWriter(file)
 
 	headers := []string{
@@ -74,7 +74,6 @@ func scrapeAndWriteCSV() []scrapStruct {
 	writer.Write(headers)
 
 	for _, dataArray := range scrapData {
-		// Converting a data to an array of strings
 		record := []string{
 			dataArray.url,
 			dataArray.image,
@@ -87,10 +86,40 @@ func scrapeAndWriteCSV() []scrapStruct {
 
 	writer.Flush()
 
-	// Check for any errors in writing the CSV file
 	if err := writer.Error(); err != nil {
 		log.Fatalln("Error writing CSV:", err)
 	}
 
+	downloadImages(scrapData) // Call function to download images
+
 	return scrapData
+}
+
+// Function to download images
+func downloadImages(data []scrapStruct) {
+	imageCollector := colly.NewCollector()
+
+	imageCollector.OnResponse(func(r *colly.Response) {
+		fileName := createFileName(r.Request.URL.String())
+		filePath := fmt.Sprintf("imagesLink1/%s", fileName) // Define your image storage directory
+		err := os.WriteFile(filePath, r.Body, 0644)
+		if err != nil {
+			log.Printf("Failed to save image %s: %v\n", filePath, err)
+		} else {
+			log.Printf("Image saved as %s\n", filePath)
+		}
+	})
+
+	for _, item := range data {
+		if item.image != "" {
+			imageCollector.Visit(item.image)
+		}
+	}
+}
+
+// Function to create a unique file name for each image
+func createFileName(url string) string {
+	hasher := md5.New()
+	hasher.Write([]byte(url))
+	return hex.EncodeToString(hasher.Sum(nil)) + ".jpg"
 }
